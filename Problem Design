@@ -1,0 +1,13 @@
+Memory Allocation Algorithms
+  The memory allocation in host uses contigous block that must be assigned and allocated before using. There are various allocation schemes.
+  
+  First Fit: uses first avaliable block that is large enough to be found from top of main memory. Its the fastest search.
+  Next Fit: modification of first fit uses first avaliable block from last assigned location
+  Best Fit: choose block that large enough from the nearest location. It requres full scane of memory to determine the block without sorting
+  Worst Fit: run through the entire memory and select largest block. Worst runtime
+
+Data Strucuture
+
+Function
+
+Overall Structure
