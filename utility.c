@@ -41,7 +41,13 @@ void free_mem(resources *res, int index, int size){
         res->memory[memory_index] = 0;
         memory_index++;
     }
-    res->memoryleft += size;
+    if (index >= 960){
+        res->realtime_mem += size;
+    }
+    else {
+        res->memoryleft += size;
+    }
+    
 }
 
 
@@ -113,15 +119,19 @@ void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *firs
             switch (proc->priority){
                 case 0:
                     push(realtime_queue, *proc);
+                    available_res->realtime_mem -= proc->mbytes;
                     break;
                 case 1:
                     push(first_priority, *proc);
+                    available_res->memoryleft -= proc->mbytes;
                     break;
                 case 2:
                     push(second_priority, *proc);
+                    available_res->memoryleft -= proc->mbytes;
                     break;
                 case 3:
                     push(third_priority, *proc);
+                    available_res->memoryleft -= proc->mbytes;
                     break;
             }
         }
@@ -142,10 +152,10 @@ bool resource_available(process *proc, resources *available_res){
     int scanners = available_res->scanners - proc->scanners;
     int memory = 0;
     if (proc->priority == 0){
-        memory = available_res->realtime_memory - proc->mbytes;
+        memory =  available_res->realtime_mem - proc->mbytes;
     } 
     else {
-        memory = available_res->user_memory - proc->mbytes;
+        memory = available_res->memoryleft - proc->mbytes;
     }
     if (cds >=0 && modems >=0 && printers >=0 && scanners >=0 && memory >= 0){
         return true;
@@ -168,5 +178,5 @@ bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *fir
 
 // Run dispatcher
 extern void run_jobs(node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority){
-
+    
 }

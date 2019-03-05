@@ -59,7 +59,8 @@ int main(int argc, char *argv[])
     available_res->scanners = 1;
     available_res->printers = 2;
     available_res->modems = 1;
-    available_res->memoryleft = MEMORY;
+    available_res->memoryleft = MEMORY - 64;
+    available_res->realtime_mem = 64;
     for (int i = 0; i < MEMORY; i++){
         available_res->memory[i] = 0;
     }
