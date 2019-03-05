@@ -15,10 +15,24 @@
 
 // Define your utility functions here, you will likely need to add more...
 
-// int alloc_mem(resources res, int size)
-// {
-//      ...
-// }
+int alloc_mem(resources *res, int size, int priority){
+    int max_memory = 0;
+    int memory_count = size;
+    int memory_index = 0;
+    if (priority == 0){
+        max_memory = 1024;
+    }
+    else {
+        max_memory = 960;
+    }
+    for (memory_index = 0; memory_index < max_memory && memory_count > 0; memory_index++){
+        if (res->memory[memory_index] == 0){
+            res->memory[memory_index] == 1;
+            memory_count--;
+        }
+    }
+    return memory_index - size;
+}
 
 // free_mem(resources res, int index, int size)
 // {
@@ -86,6 +100,11 @@ void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *firs
     while (current_node->proc.arrival_time == time){
         if (resource_available(&(current_node->proc), available_res)){
             process *proc = pop(job_queue);
+            available_res->cds = available_res->cds - proc->cds;
+            available_res->printers = available_res->printers - proc->printers;
+            available_res->scanners = available_res->scanners - proc->scanners;
+            available_res->modems = available_res->modems - proc->modems;
+            proc->memory_index = alloc_mem(available_res, proc->mbytes, proc->priority);
             switch (proc->priority){
                 case 0:
                     push(realtime_queue, *proc);
@@ -140,4 +159,9 @@ bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *fir
     else {
         return false;
     }
+}
+
+// Run dispatcher
+extern void run_jobs(node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority){
+
 }

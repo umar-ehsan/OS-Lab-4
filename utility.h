@@ -21,7 +21,7 @@
 // Function to allocate a contiguous chunk of memory in your resources structure
 // memory array, always make sure you leave the last 64 values (64 MB) free, should
 // return the index where the memory was allocated at
-extern int alloc_mem(resources res, int size);
+extern int alloc_mem(resources *res, int size, int priority);
 
 // Function to free the allocated contiguous chunk of memory in your resources
 // structure memory array, should take the resource struct, start index, and 
@@ -40,8 +40,12 @@ extern void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_
 
 // Returns true if process resources are less than equal to available resources
 // false otherwise
-bool resource_available(process *proc, resources *available_res);
+extern bool resource_available(process *proc, resources *available_res);
 
 // Returns true if all queues are empty, false otherwise
-bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority);
+extern bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority);
+
+// Run dispatcher
+extern void run_jobs(node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority);
+
 #endif /* UTILITY_H_ */
