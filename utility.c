@@ -21,11 +21,12 @@ int alloc_mem(resources *res, int size, int priority){
     int memory_index = 0;
     if (priority == 0){
         max_memory = 1024;
+        memory_index = 960;
     }
     else {
         max_memory = 960;
     }
-    for (memory_index = 0; memory_index < max_memory && memory_count > 0; memory_index++){
+    for (; memory_index < max_memory && memory_count > 0; memory_index++){
         if (res->memory[memory_index] == 0){
             res->memory[memory_index] == 1;
             memory_count--;
@@ -34,10 +35,14 @@ int alloc_mem(resources *res, int size, int priority){
     return memory_index - size;
 }
 
-// free_mem(resources res, int index, int size)
-// {
-//      ...
-// }
+void free_mem(resources *res, int index, int size){
+    int memory_index = index;
+    while (memory_index < index + size){
+        res->memory[memory_index] = 0;
+        memory_index++;
+    }
+    res->memoryleft += size;
+}
 
 
 // Loads the processes listed in the input file into the dispatch

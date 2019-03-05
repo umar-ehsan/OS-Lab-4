@@ -26,7 +26,7 @@ extern int alloc_mem(resources *res, int size, int priority);
 // Function to free the allocated contiguous chunk of memory in your resources
 // structure memory array, should take the resource struct, start index, and 
 // size (amount of memory allocated) as arguments
-extern void free_mem(resources res, int index, int size);
+extern void free_mem(resources *res, int index, int size);
 
 // Function to parse the file and initialize each process structure and add
 // it to your job dispatch list queue (linked list)
