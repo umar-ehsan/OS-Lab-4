@@ -70,3 +70,23 @@ void load_dispatch(char *dispatch_file, node_t *queue)
     fclose(file);
     
 }
+
+// Add each process structure instance to the job dispatch list queue
+// The job queue is filled according to the arrival time of each process
+// The dispatch list is empty after the job queue is filled up.
+void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority, resources *available_res){
+    
+    node_t *current_node = job_queue;
+    // get to the first item in the job queue
+    while(current_node-> next_node != NULL){
+        current_node = current_node->next_node;
+    }
+
+    // add processes to the priority queues as long as resources are available and arrival time is less than equal
+    // to dispatcher time
+    while (current_node->proc.arrival_time <= time && resource_available(&(current_node->proc), available_res)){
+        process *proc = pop(job_queue);
+        current_node 
+    }
+}
+

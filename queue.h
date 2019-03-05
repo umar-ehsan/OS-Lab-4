@@ -16,6 +16,7 @@ typedef struct {
      int cds;
      int scanners;
      int modems;
+     int available_memory;
      int memory[MEMORY];
 } resources;
 
@@ -40,6 +41,7 @@ typedef struct {
 typedef struct node{
     process proc;
     struct node *next_node;
+    struct node *previous_node;
 } node_t;
 
 // Include your relevant FIFO queue functions declarations here they must start 

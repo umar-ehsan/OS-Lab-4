@@ -8,6 +8,7 @@
 #ifndef UTILITY_H_
 #define UTILITY_H_
 
+#include <stdbool.h>
 #include "queue.h"
 
 // The amount of available memory
@@ -31,5 +32,14 @@ extern void free_mem(resources res, int index, int size);
 // it to your job dispatch list queue (linked list)
 extern void load_dispatch(char *dispatch_file, node_t *queue);
 
+// Add each process structure instance to the job dispatch list queue
+// The job queue is filled according to the arrival time of each process
+// The dispatch list is empty after the job queue is filled up.
+extern void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority, resources *available_res);
+
+
+// Returns true if process resources are less than equal to available resources
+// false otherwise
+bool resource_available(process *proc, resources *available_res);
 
 #endif /* UTILITY_H_ */
