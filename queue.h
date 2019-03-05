@@ -37,9 +37,9 @@ typedef struct {
 
 
 // Your linked list structure for your queue
-typedef struct{
+typedef struct node{
     process proc;
-    struct note_t *next_node;
+    struct node *next_node;
 } node_t;
 
 // Include your relevant FIFO queue functions declarations here they must start 
@@ -48,9 +48,9 @@ typedef struct{
 // Add a new process to the queue, returns the address of the next node added
 // to the linked list
 
-extern node_t *push(node_t *tail, process proc);
+extern void push(node_t *tail, process proc);
 
-extern node_t *pop(node_t *tail);
+extern process *pop(node_t *tail);
 
 
 #endif /* QUEUE_H_ */

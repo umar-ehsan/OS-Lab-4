@@ -13,8 +13,6 @@
 // The amount of available memory
 #define MEMORY 1024
 
-int total_mem[MEMORY] = {0};
-
 
 // Include your relevant functions declarations here they must start with the 
 // extern keyword such as in the following examples:
