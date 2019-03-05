@@ -26,6 +26,7 @@
 node_t *job_queue, *realtime_queue, *first_priority, *second_priority, *third_priority;
 resources *available_res;
 int time = 0;
+bool terminate = false;
 // Define functions declared in hostd.h here
 
 int main(int argc, char *argv[])
@@ -89,7 +90,9 @@ int main(int argc, char *argv[])
 
     // Repeat until all processes have been executed, all queues are empty
 
-    while(1){
+    terminate = terminate_dispatcher(job_queue, realtime_queue, first_priority, second_priority, third_priority);
+
+    while(!terminate){
         load_jobs(time, job_queue, realtime_queue, first_priority, second_priority, third_priority, available_res);
 
         time++;

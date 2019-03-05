@@ -42,4 +42,6 @@ extern void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_
 // false otherwise
 bool resource_available(process *proc, resources *available_res);
 
+// Returns true if all queues are empty, false otherwise
+bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority);
 #endif /* UTILITY_H_ */

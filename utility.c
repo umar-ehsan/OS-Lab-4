@@ -132,3 +132,12 @@ bool resource_available(process *proc, resources *available_res){
 }
 
 
+// Returns true if all queues are empty, false otherwise
+bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority){
+    if (job_queue->next_node == NULL && realtime_queue->next_node == NULL && first_priority->next_node == NULL && second_priority->next_node == NULL && third_priority->next_node == NULL){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
