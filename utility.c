@@ -67,5 +67,6 @@ void load_dispatch(char *dispatch_file, node_t *queue)
             push(queue, input_process);
         }
     }
+    fclose(file);
     
 }
