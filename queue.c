@@ -20,7 +20,7 @@ void *push(node_t *head, process proc){
     }
     
     //or add item to end of list
-	node_t * current = head;
+	node_t *current = head;
 	while (current -> next != NULL){
      		current = current -> next;	
 	}
