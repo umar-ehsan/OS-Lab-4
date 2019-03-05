@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
     while(!terminate){
         load_jobs(time, job_queue, realtime_queue, first_priority, second_priority, third_priority, available_res);
-
+        run_jobs(realtime_queue, first_priority, second_priority, third_priority);
         time++;
     }
      
