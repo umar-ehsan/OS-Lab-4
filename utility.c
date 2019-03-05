@@ -82,11 +82,53 @@ void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *firs
         current_node = current_node->next_node;
     }
 
-    // add processes to the priority queues as long as resources are available and arrival time is less than equal
-    // to dispatcher time
-    while (current_node->proc.arrival_time <= time && resource_available(&(current_node->proc), available_res)){
-        process *proc = pop(job_queue);
-        current_node 
+    // add processes to the priority queues as long as resources are available
+    while (current_node->proc.arrival_time == time){
+        if (resource_available(&(current_node->proc), available_res)){
+            process *proc = pop(job_queue);
+            switch (proc->priority){
+                case 0:
+                    push(realtime_queue, *proc);
+                    break;
+                case 1:
+                    push(first_priority, *proc);
+                    break;
+                case 2:
+                    push(second_priority, *proc);
+                    break;
+                case 3:
+                    push(third_priority, *proc);
+                    break;
+            }
+        }
+        else {
+            current_node->proc.arrival_time++;
+        }
+        current_node = current_node->previous_node;
+        
     }
 }
+
+// Returns true if process resources are less than equal to available resources
+// false otherwise
+bool resource_available(process *proc, resources *available_res){
+    int cds = available_res->cds - proc->cds;
+    int modems = available_res->modems - proc->modems;
+    int printers = available_res->printers - proc->printers;
+    int scanners = available_res->scanners - proc->scanners;
+    int memory = 0;
+    if (proc->priority == 0){
+        memory = available_res->realtime_memory - proc->mbytes;
+    } 
+    else {
+        memory = available_res->user_memory - proc->mbytes;
+    }
+    if (cds >=0 && modems >=0 && printers >=0 && scanners >=0 && memory >= 0){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 

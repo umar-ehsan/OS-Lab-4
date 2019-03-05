@@ -16,7 +16,8 @@ typedef struct {
      int cds;
      int scanners;
      int modems;
-     int available_memory;
+     int user_memory;
+     int realtime_memory;
      int memory[MEMORY];
 } resources;
 
