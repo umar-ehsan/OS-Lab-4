@@ -22,13 +22,15 @@ int alloc_mem(resources *res, int size, int priority){
     if (priority == 0){
         max_memory = 1024;
         memory_index = 960;
+        res->realtime_mem -= size;
     }
     else {
         max_memory = 960;
+        res->memoryleft -= size;
     }
     for (; memory_index < max_memory && memory_count > 0; memory_index++){
         if (res->memory[memory_index] == 0){
-            res->memory[memory_index] == 1;
+            res->memory[memory_index] = 1;
             memory_count--;
         }
     }
@@ -52,13 +54,12 @@ void free_mem(resources *res, int index, int size){
 
 
 // Loads the processes listed in the input file into the dispatch
-// list queue
-void load_dispatch(char *dispatch_file, node_t *queue)
-{
-    process input_process;
+// list array
+int load_dispatch(char *dispatch_file, int process_array[][9]){
     char input_buffer[BUFFER_LEN], *split_input;
     FILE *file = fopen(dispatch_file, "r");
-    
+    int process_index = 0, resource_index = 0;
+
     // Checking if input file exits
     if (file == NULL){
         printf("Error, file does not exit.\n");
@@ -72,74 +73,97 @@ void load_dispatch(char *dispatch_file, node_t *queue)
         while(fgets(input_buffer, BUFFER_LEN, file) != NULL){
             split_input = strtok(input_buffer, "\n");
             split_input = strtok(split_input, ",");
-            input_process.arrival_time = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.priority = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.processor_time = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.mbytes = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.printers = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.scanners = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.modems = atoi(split_input);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
             split_input = strtok(NULL, ",");
-            input_process.cds = atoi(split_input);
-            input_process.memory_index = -1;
-            // push process to dispatch queue
-            push(queue, input_process);
+            process_array[process_index][resource_index] = atoi(split_input);
+            resource_index++;
+            process_array[process_index][resource_index] = -1;
+            resource_index = 0;
+            process_index++;
         }
     }
     fclose(file);
-    
+    return process_index;
 }
 
 // Add each process structure instance to the job dispatch list queue
 // The job queue is filled according to the arrival time of each process
-// The dispatch list is empty after the job queue is filled up.
-void load_jobs(int time, node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority, resources *available_res){
+// The priority and real time queues are filled according to resource availability
+void load_jobs(int time, int num_processes, int dispatch_list[][9], node_t *job_queue, node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority, resources *available_res){
+    int queued_jobs = 0;
     
-    node_t *current_node = job_queue;
-    // get to the first item in the job queue
-    while(current_node-> next_node != NULL){
-        current_node = current_node->next_node;
+    // if dispatcher time = process arrival time, push process into the job queue
+    for (int i = 0; i < num_processes; i++){
+        if (time == dispatch_list[i][0]){
+            process *new_process = (process*)malloc(sizeof(process));
+            new_process->arrival_time = dispatch_list[i][0];
+            new_process->priority = dispatch_list[i][1];
+            new_process->processor_time = dispatch_list[i][2];
+            new_process->mbytes = dispatch_list[i][3];
+            new_process->printers = dispatch_list[i][4];
+            new_process->scanners = dispatch_list[i][5];
+            new_process->modems = dispatch_list[i][6];
+            new_process->cds = dispatch_list[i][7];
+            new_process->memory_index = dispatch_list[i][8];
+            push(job_queue, new_process);
+            free(new_process);
+            new_process = NULL;
+        }
     }
-
-    // add processes to the priority queues as long as resources are available
-    while (current_node->proc.arrival_time == time){
-        if (resource_available(&(current_node->proc), available_res)){
+    // if resources are available, push the process in job queue into the real time or priority 
+    // user queues. if not, push it back into the job queue
+    if (job_queue->next_node != NULL){
+        node_t *curr = job_queue->next_node;
+        queued_jobs++;
+        while(curr->next_node != NULL){
+            curr = curr->next_node;
+            queued_jobs++;
+        }
+        curr = NULL;
+        for (int i = 0; i < queued_jobs; i++){
             process *proc = pop(job_queue);
-            available_res->cds = available_res->cds - proc->cds;
-            available_res->printers = available_res->printers - proc->printers;
-            available_res->scanners = available_res->scanners - proc->scanners;
-            available_res->modems = available_res->modems - proc->modems;
-            proc->memory_index = alloc_mem(available_res, proc->mbytes, proc->priority);
-            switch (proc->priority){
-                case 0:
-                    push(realtime_queue, *proc);
-                    available_res->realtime_mem -= proc->mbytes;
-                    break;
-                case 1:
-                    push(first_priority, *proc);
-                    available_res->memoryleft -= proc->mbytes;
-                    break;
-                case 2:
-                    push(second_priority, *proc);
-                    available_res->memoryleft -= proc->mbytes;
-                    break;
-                case 3:
-                    push(third_priority, *proc);
-                    available_res->memoryleft -= proc->mbytes;
-                    break;
+            if(resource_available(proc, available_res)){
+                switch (proc->priority){
+                    case 0:
+                        push(realtime_queue, proc);
+                        break;
+                    case 1:
+                        push(first_priority, proc);
+                        break;
+                    case 2:
+                        push(second_priority, proc);
+                        break;
+                    case 3:
+                        push(third_priority, proc);
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
-        else {
-            current_node->proc.arrival_time++;
-        }
-        current_node = current_node->previous_node;
-        
+            else {
+                push(job_queue, proc);
+            }
+            proc = NULL;
+        }   
     }
 }
 
@@ -174,9 +198,4 @@ bool terminate_dispatcher(node_t *job_queue, node_t *realtime_queue, node_t *fir
     else {
         return false;
     }
-}
-
-// Run dispatcher
-extern void run_jobs(node_t *realtime_queue, node_t *first_priority, node_t *second_priority, node_t *third_priority){
-    
 }

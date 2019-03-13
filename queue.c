@@ -15,14 +15,10 @@
 // Pushes a node onto a queue. The queue is accessed from the tail
 // instead of the head so pushing is just a simple operation of 
 // insertion
-void push(node_t *tail, process proc){
+void push(node_t *tail, process *proc){
     node_t *new_node = (node_t*) malloc(sizeof(node_t));
     new_node->proc = proc;
     new_node->next_node = tail->next_node;
-    if (new_node->next_node != NULL){
-        new_node->next_node->previous_node = new_node;
-    }
-    new_node->previous_node = tail;
     tail->next_node = new_node;
 }
 
@@ -32,17 +28,19 @@ void push(node_t *tail, process proc){
 // queue to pop the first element that was pushed (FIFO)
 process *pop(node_t *tail){
     process *return_process;
-    node_t *current_node;
+    node_t *current_node, *previous_node;
     if (tail-> next_node == NULL){
         return NULL;
     }
     else {
         current_node = tail->next_node;
+        previous_node = tail;
         while(current_node->next_node != NULL){
+            previous_node = current_node;
             current_node = current_node->next_node;
         }
     }
-    current_node->previous_node->next_node = NULL;
-    return_process =  &(current_node->proc);
+    previous_node->next_node = NULL;
+    return_process =  current_node->proc;
     return return_process;
 }
